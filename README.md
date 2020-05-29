@@ -1,5 +1,8 @@
 # hakk.ai
 
+
+# Submission Due Phase 2 - 19th June 2020
+
 ## Phase 1
 
 We aim to solve the Grab problem in [Microsoft Azure Virtual Hackathon](https://www.msazurevirtualhack.com/). The Grab challenge can be found [here](https://github.com/Feliren88/hakk.ai/blob/master/challenge%20guideline/Grab%20Challenge%20Guidelines%20-%20Phase%202.pdf)
