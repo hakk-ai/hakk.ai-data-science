@@ -9,12 +9,9 @@ import osmread
 
 def map_matching(map_con, df, s=0, n=3):
     trj_ids = df.trj_id.unique()
-    path_list = []
-    matchers=[]
-    nodes_num = 0
     for i in range(s,n): 
         df_path = df[df['trj_id'] == trj_ids[i]]
-        df_trj = df_path[['rawlat' ,'rawlng','pingtimestamp', 'accuracy']]
+        df_trj = df_path[['rawlat' ,'rawlng']]
         track = []
         max_dist = 2
         for j in range(len(df_trj)):
@@ -32,17 +29,16 @@ def map_matching(map_con, df, s=0, n=3):
                 states, lastidx = matcher.match(track)
                 nodes = matcher.path_pred_onlynodes
                 a = states[-1]
-                nodes_num += len(nodes)
                 break
             except:
                 max_dist += max_dist*0.5
-                # print(max_dist)
+                print(max_dist)
         # print('current trajectory ID: {}'.format(trj_ids[i]))
-        for j in range(len(nodes)):
-            path_list.append([trj_ids[i],map_con.graph[nodes[j]][0][0], map_con.graph[nodes[j]][0][1]])
-        assert len(path_list) == nodes_num, "There are nodes missing!"
+        with open("file.txt", "a+") as output:
+            for j in range(len(nodes)):
+                trj_data = [trj_ids[i],map_con.graph[nodes[j]][0][0], map_con.graph[nodes[j]][0][1]]
+                output.write('{}\n'.format(str(trj_data)))
         print(i)
-    return path_list
 
 # def plot_route(map_con, matcher, filename="my_plot.png", use_osm=True):
 #     mmviz.plot_map(map_con, matcher=matcher[1],
@@ -72,13 +68,11 @@ if __name__=="__main__":
 
     """## Read the SG dataframe"""
     sg_df = pd.read_csv('sg_car.csv')
+    # print(sg_df.head())
     sg_df = sg_df.sort_values(by=['trj_id', 'pingtimestamp'])
     sg_df = sg_df.drop(sg_df[(sg_df.accuracy > 3000)].index)
     trj_ids = sg_df.trj_id.unique()
     n = len(trj_ids)
     print("Start")
-    path_list = map_matching(map_con, sg_df, s=0, n=n)
-
-    with open("file.txt", "w+") as output:
-        output.write(str(path_list))
+    map_matching(map_con, sg_df, s=14000, n=20000)
 
