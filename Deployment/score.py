@@ -2,7 +2,7 @@ import json
 import numpy as np
 import joblib
 from azureml.core.model import Model
-import xgboost
+import xgboost as xgb
 import pandas as pd
 
 from inference_schema.schema_decorators import input_schema, output_schema
@@ -91,8 +91,9 @@ def init():
     global model
 
     model_path = Model.get_model_path(model_name='finalized_model')
-    
-    model = joblib.load(model_path)
+    bst = xgb.Booster({'nthread': 1})  # init model
+    model = bst.load_model(model_path)  # load data
+    #model = joblib.load(model_path)
 
     
 input_sample = pd.DataFrame(data=[{
