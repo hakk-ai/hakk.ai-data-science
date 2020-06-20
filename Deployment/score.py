@@ -47,7 +47,7 @@ def haversine_m(lon1, lat1, lon2, lat2):
     m = 3956 * c
     return m
 
-def preprocessing(data):
+"""def preprocessing(data):
     data['timestamp'] = pd.to_datetime(data['timestamp'], unit='s')
     data['timestamp'] = pd.DatetimeIndex(data.timestamp)
 
@@ -72,29 +72,16 @@ def preprocessing(data):
                                  data['longitude_destination'], data['latitude_destination'])
 
 
-    from sklearn.decomposition import PCA
-    coords = np.vstack((data[['latitude_origin', 'longitude_origin']].values,
-                    data[['latitude_destination', 'longitude_destination']].values))
-    
-    pca = PCA().fit(coords)
-
-    data['pickup_pca0'] = pca.transform(data[['latitude_origin', 'longitude_origin']])[:, 0]
-    data['pickup_pca1'] = pca.transform(data[['latitude_origin', 'longitude_origin']])[:, 1]
-    data['dropoff_pca0'] = pca.transform(data[['latitude_destination', 'longitude_destination']])[:, 0]
-    data['dropoff_pca1'] = pca.transform(data[['latitude_destination', 'longitude_destination']])[:, 1]
-
     data = data.drop(['timestamp'], axis=1)
-    
-    return data
+    return data"""
 
 def init():
-    global model
+    global bst
 
-    model_path = Model.get_model_path(model_name='finalized_model')
-    bst = xgb.Booster({'nthread': 1})  # init model
-    model = bst.load_model(model_path)  # load data
+    model_path = Model.get_model_path(model_name='xgb_final_model')
+    bst = xgb.Booster({'nthread': -1})  # init model
+    bst.load_model(model_path)  # load data
     #model = joblib.load(model_path)
-
     
 input_sample = pd.DataFrame(data=[{
     "latitude_origin": -6.141255,
@@ -115,10 +102,34 @@ output_sample = np.array([360.00])
 @output_schema(NumpyParameterType(output_sample))
 def run(data):
     try:
+        data['timestamp'] = pd.to_datetime(data['timestamp'], unit='s')
+        data['timestamp'] = pd.DatetimeIndex(data.timestamp)
+
+        data['is_wee_hours'] = np.where(data['hour_of_day'].isin([17,18,19,20,21]), 1, 0)
+
+        data['is_rush_hours_morning'] = np.where(data.timestamp.dt.strftime('%H:%M:%S').between('23:30:00', '01:30:00'), 1, 0)
+        data['is_rush_hours_evening'] = np.where(data.timestamp.dt.strftime('%H:%M:%S').between('09:00:00', '12:00:00'), 1, 0)
+
+        data['sin_hour_of_day'] = np.sin(2*np.pi*data.hour_of_day/24)
+        data['cos_hour_of_day'] = np.cos(2*np.pi*data.hour_of_day/24)
+        data['sin_day_of_week'] = np.sin(2*np.pi*data.day_of_week/7)
+        data['cos_day_of_week'] = np.cos(2*np.pi*data.day_of_week/7)
+
+
+        data['haversine_km'] = haversine_km(data['longitude_origin'], data['latitude_origin'], 
+                                     data['longitude_destination'], data['latitude_destination'])
+
+        data['haversine_m'] = haversine_m(data['longitude_origin'], data['latitude_origin'], 
+                                     data['longitude_destination'], data['latitude_destination'])
+
+
+        data = data.drop(['timestamp'], axis=1)
+        ddata = xgb.DMatrix(data)
+
         #preprocessing
-        data = preprocessing(data)
+        #data = preprocessing(data)
         #result
-        result = model.predict(data)    
+        result = bst.predict(ddata)    
         return result.tolist()
     
     except Exception as e:
