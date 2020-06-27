@@ -1,5 +1,6 @@
 # hakk.ai
 
+![alt text](https://github.com/hakk-ai/hakk.ai-data-science/blob/master/picture/unnamed(1).png)
 
 # Submission Due Phase 2 - 20th June 2020
 
