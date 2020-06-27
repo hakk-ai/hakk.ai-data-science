@@ -1,4 +1,4 @@
-# hakk.ai
+# Hakk.ai
 
 ![alt text](https://github.com/hakk-ai/hakk.ai-data-science/blob/master/picture/unnamed(1).png)
 
