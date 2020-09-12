@@ -15,10 +15,3 @@ Our team consists of:
 4. James Casia (Mobile App Developer)
 5. Firnas Aleem (Software Engineer)
 
-Traditional Machine Learning experiment can be found [here](https://github.com/hakk-ai/hakk.ai-data-science/blob/master/Modelling/Modelling_Feliren.ipynb)
-
-Gradient Boosting experiment can be found [here](https://github.com/hakk-ai/hakk.ai-data-science/blob/master/Modelling/Modelling_GradientBoost_Ivan.ipynb)
-
-Consistency test can be found [here](https://github.com/hakk-ai/hakk.ai-data-science/blob/master/Modelling/Modelling_MultipleScript%26Stacking_Ivan.ipynb). In this notebook, we also tried ensembling using both XGboost and LightGBM.
-
-The deployed model is in [here](https://github.com/hakk-ai/hakk.ai-data-science/blob/master/Modelling/xgb_really_final.pkl)
